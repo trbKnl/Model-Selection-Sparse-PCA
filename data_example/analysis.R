@@ -243,5 +243,35 @@ results$W
 
 xtable(results$W, digits = 3)
 
+# VAF
 
+VAF <- function(dat, W, P) {
+    VAF <- rep(NA, ncol(W))
+    for (i in 1:ncol(W)) {
+        SStotal <- sum(dat^2)
+        SS <- sum((dat - dat %*% W[, i] %*% t(P[, i]))^2)
+        VAF[i] <- 1 - SS / SStotal
+    }
+    SStotal <- sum(dat^2)
+    SS <- sum((dat - dat %*% W %*% t(P))^2)
+    VAFtotal <- 1 - SS / SStotal
+    return(list(VAF=VAF, VAFtotal=VAFtotal))
+}
+
+VAFres <- VAF(Her_Cat, results$W, results$P) 
+round(VAFres$VAF * 100, 1) 
+round(VAFres$VAFtotal * 100, 1)
+
+
+################ Varimax analysis of the herring data
+
+varimaxW <- varimax(svd(Her_Cat)$v[, 1:Q])$loadings[, 1:Q]
+rownames(varimaxW) <-  c(colnames(Herring$Herring_ChemPhy), colnames(Herring$Herring_Sensory))
+
+xtable(varimaxW, digits = 3)
+
+#VAF
+variVAFres <- VAF(Her_Cat, varimaxW, varimaxW) 
+round(variVAFres$VAF * 100, 1) 
+round(variVAFres$VAFtotal * 100, 1)
 
